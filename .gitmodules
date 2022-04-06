@@ -1,3 +1,9 @@
 [submodule "prog/DS_common"]
 	path = prog/DS_common
 	url = https://github.com/Dranikf/DS_common
+[submodule "prog/data_processing/DS_common"]
+	path = prog/data_processing/DS_common
+	url = https://github.com/Dranikf/DS_common
+[submodule "prog/data_processing/classification_power_predictor"]
+	path = prog/data_processing/classification_power_predictor
+	url = https://github.com/Dranikf/classification_power_predictor
