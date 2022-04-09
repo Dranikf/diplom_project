@@ -138,29 +138,19 @@ def plot_learning_curve(
     #                  начать отображение в правое окно
     
     plt.subplot(121)
-    X_range = \
-    range(
-        start_show, 
-        len(lc_data)
-    )
+    X_range = range(start_show, len(lc_data))
 
-    plt.plot(
-        X_range,
-        lc_data[list(X_range)]
-    )
+    plt.plot(X_range, lc_data[list(X_range)])
     plt.xlabel("Эпоха")
     plt.ylabel("Целевая функция")
     
     
     plt.subplot(122)
-    X_range = \
-        range(
-            len(lc_data)-last_spes_show, 
-            len(lc_data)
-        )
+    X_range = range(
+        len(lc_data)-last_spes_show, len(lc_data)
+    )
     plt.plot(
-        X_range, 
-        lc_data[list(X_range)]
+        X_range, lc_data[list(X_range)]
     )
     plt.xlabel("Эпоха")
     
@@ -190,16 +180,19 @@ def model_fit_get_perfomance(
     # weight_decay -         параметр регуляризации
     # lc_plot_param -        именованые аргументы функции plot_learning_curve
     # output:
-    # [learning_info, auc_info]
+    # [learning_info, auc_info, nets]
     # learning_info -        pandas.DataFrame по столбцам значения целевой
     #                        функции для эпохи в строке
     # auc_info -             pandas.Series AUC на тестовых данных для
     #                        каждой формы модели
+    # nets -                 список с полученными моделями - с перспективой
+    #                        дообучения
     
     
     # выходные массивы
     learning_info = pd.DataFrame()
     auc_info = pd.Series(dtype = 'float64')
+    nets = []
     
     
     for layers_info in hidden_layers_ranges:
@@ -233,8 +226,9 @@ def model_fit_get_perfomance(
         identyfyer = str(layers_info)
         learning_info.loc[:, identyfyer] = lc
         auc_info[identyfyer] = auc
+        nets.append(net)
         
         # сохранение информации =======================
         print(identyfyer + " AUC = " + str(auc))
         
-        return [learning_info, auc_info]
+    return [learning_info, auc_info, nets]
