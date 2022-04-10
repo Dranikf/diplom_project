@@ -81,23 +81,26 @@ def get_loss_value(loss_fn, model, train_loader):
             ).item()
 
     
-def train_better(
+def train(
     model, optimizer, loss_fn, 
-    train_loader, epochs=20, lr_decr = 1.1
+    train_loader, epochs=20, 
+    lr_scheduler = None
 ):
     '''Алгоритм обучения сети'''
     # inputs:
     # model - модель которая подлежит обучению
     # optimizer - оптимизатор, который педполагается использовать
     # loss_fn - функция потерь
-    # train_loader - обучатель модели
+    # train_loader - загрузчик обучающих данных
     # epochs - эпохи используемые в нейронной сети
-    # lr_decr - степень понижения параметра learning rate
+    # lr_scheduler - планировщик learning rate
+    
+    initial_loss = get_loss_value(
+        loss_fn, model, train_loader
+    )
     
     fun_arr = []
-    fun_arr.append(get_loss_value(
-        loss_fn, model, train_loader
-    ))
+    fun_arr.append(initial_loss)
     
     for epoch in range(epochs):
 
@@ -109,19 +112,15 @@ def train_better(
             loss = loss_fn(output, targets)
             loss.backward()
             optimizer.step()
-        
+        if lr_scheduler:
+            lr_scheduler.step()
+            
         # для отслеживания процесса
         # обучения буду сохранять текущее
         # значение целевой функии
         fun_arr.append(get_loss_value(
             loss_fn, model, train_loader
         ))
-        
-        # если предыдущий шаг привел к понижению целевой
-        # функции то надо немного понизить learning rate
-        if fun_arr[-2] > fun_arr[-1]:
-            for g in optimizer.param_groups:
-                g['lr'] = g['lr']/1.1
 
     
     return fun_arr
@@ -157,9 +156,8 @@ def plot_learning_curve(
     
 def model_fit_get_perfomance(
     hidden_layers_ranges, epochs, loss_fn,
-    train_loader, X_test, y_test, 
-    lc_plot_param = {}, weight_decay = 0.5, 
-    lr = 0.1, lr_decr = 1.1
+    train_loader, X_test, y_test, weight_decay = 0.5, 
+    lr = 0.1
 ):
     '''Метод обеспечивает построение моделей заданных форм
     и "снимает" инофрмацию о их свойсвах'''
@@ -170,15 +168,12 @@ def model_fit_get_perfomance(
     #                        типа [<нейноны 1 слоя>, <нейноны 2 слоя>, ...]
     # lr -                   learning rate с которого начинается
     #                        оптимизация
-    # lr_decr -              соответсвующий алгоритм функции
-    #                        "train_better"
     # epochs -               сколько эпох проходит каждая из 
     #                        форм модели
     # test_X, test_y -       данные на которых проводиться валидация
     #                        модели
     # train_loader -         загрузчик трерировочных данных
     # weight_decay -         параметр регуляризации
-    # lc_plot_param -        именованые аргументы функции plot_learning_curve
     # output:
     # [learning_info, auc_info, nets]
     # learning_info -        pandas.DataFrame по столбцам значения целевой
@@ -209,7 +204,7 @@ def model_fit_get_perfomance(
         # применение текущих настроек =================
         # обучение ====================================
         #print(net.layers[0].bias)
-        lc = train_better(
+        lc = train(
             net, optimizer, loss_fn, 
             train_loader, epochs = epochs
         )
