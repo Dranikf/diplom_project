@@ -4,6 +4,7 @@ import numpy as np
 types_natural_names = {
     "datetime64[ns]" : 'Дата',
     "category" : "Номинативная",
+    "object" : "Номинативная",
     "bool" : "Номинативная",
     "int64" : "Целое число",
     "int32" : "Целое число",
@@ -18,16 +19,16 @@ def get_col_av_values(col):
         return "[" + np.min(col).strftime("%d.%m.%Y") + ";" +\
                 np.max(col).strftime("%d.%m.%Y") + ']'
     else:
-        return str(col.cat.categories.tolist())[1:-1].replace("'", "")
+        return str(col.unique().tolist())[1:-1].replace("'", "")
 
-def get_col_cat_count(col):
+def get_col_obj_count(col):
     '''получить для категориальной переменной число
     уровней, а для численной "-"'''
     if pd.api.types.is_numeric_dtype(col) or\
         pd.api.types.is_datetime64_any_dtype(col):
         return "-"
     else:
-        return len(col.cat.categories)
+        return len(col.unique())
 
     
 def get_data_frame_settings(df):
@@ -43,7 +44,7 @@ def get_data_frame_settings(df):
         result.loc[col, :] = [
             df[col].dtype,
             get_col_av_values(df[col]),
-            get_col_cat_count(df[col]),
+            get_col_obj_count(df[col]),
             sum(df[col].isna())
         ]
     
