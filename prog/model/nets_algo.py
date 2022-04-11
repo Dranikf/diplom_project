@@ -104,7 +104,7 @@ def train(
     
     for epoch in range(epochs):
 
-        model.train()
+        #model.train()
         for batch in train_loader:
             optimizer.zero_grad()
             inputs, targets = batch
@@ -152,9 +152,10 @@ def plot_learning_curve(
         X_range, lc_data[list(X_range)]
     )
     plt.xlabel("Эпоха")
+
+
     
-    
-def model_fit_get_perfomance(
+def models_fit_get_perfomance(
     hidden_layers_ranges, epochs, loss_fn,
     train_loader, X_test, y_test, weight_decay = 0.5, 
     lr = 0.1
