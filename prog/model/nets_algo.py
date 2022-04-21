@@ -140,8 +140,8 @@ def plot_learning_curve(
     X_range = range(start_show, len(lc_data))
 
     plt.plot(X_range, lc_data[list(X_range)])
-    plt.xlabel("Эпоха")
-    plt.ylabel("Целевая функция")
+    plt.xlabel("Эпоха", fontsize = 14)
+    plt.ylabel("Целевая функция", fontsize = 14)
     
     
     plt.subplot(122)
@@ -151,7 +151,7 @@ def plot_learning_curve(
     plt.plot(
         X_range, lc_data[list(X_range)]
     )
-    plt.xlabel("Эпоха")
+    plt.xlabel("Эпоха", fontsize = 14)
 
 
     
